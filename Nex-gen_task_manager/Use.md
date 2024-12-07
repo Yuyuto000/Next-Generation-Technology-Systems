@@ -15,6 +15,7 @@ TaskManager.add_task("Task 1")
 TaskManager.add_task("Task 2")
 TaskManager.list_tasks()
 
+
 #### `lib/task_manager/task.ex` (タスクモジュール)
 
 ```elixir
