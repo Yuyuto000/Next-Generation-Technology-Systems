@@ -14,3 +14,20 @@
 TaskManager.add_task("Task 1")
 TaskManager.add_task("Task 2")
 TaskManager.list_tasks()
+
+#### `lib/task_manager/task.ex` (タスクモジュール)
+
+```elixir
+defmodule TaskManager.Task do
+  defstruct id: nil, name: nil, status: :pending
+
+  def start_task(%TaskManager.Task{id: id} = task) do
+    IO.puts("Starting task #{id}: #{task.name}")
+    %{task | status: :in_progress}
+  end
+
+  def complete_task(task) do
+    IO.puts("Completing task #{task.id}: #{task.name}")
+    %{task | status: :completed}
+  end
+end
