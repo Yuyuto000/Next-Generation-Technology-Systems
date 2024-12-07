@@ -6,6 +6,7 @@ It also has built-in web embedding, allowing you to incorporate the system into 
 And rightly so, this project is based on a computer system (the one that hackers get into) and has many different functions implemented, making it very easy to use.
 # Features🌐
 This next-generation computer system consists of the following features:
+
 **1.AI Dialogue**
 This mechanism is at the heart of this large-scale system and faithfully answers a variety of questions.
 Advanced API settings are available, allowing you to customize responses based on the user's mood.
