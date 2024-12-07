@@ -1,7 +1,7 @@
 from flask import Flask, request, jsonify
-from transformers import AutoModelForCausalLM, AutoTokenizer
 from train_model import ChatBotModel, tokenizer
 from database.init_db import Session, ChatHistory
+from database.knowledge_base import fetch_pubmed, save_to_db, get_knowledge_by_category
 import torch
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 
@@ -11,10 +11,6 @@ app = Flask(__name__)
 model = ChatBotModel(vocab_size=1000, embed_size=128, hidden_size=256)
 model.load_state_dict(torch.load('chatbot_model/chatbot_model.pt'))
 model.eval()
-
-transformer_model_name = "gpt2"
-transformer_tokenizer = AutoTokenizer.from_pretrained(transformer_model_name)
-transformer_model = AutoModelForCausalLM.from_pretrained(transformer_model_name)
 
 # データベースセッション
 session = Session()
@@ -41,11 +37,18 @@ def chat():
 @app.route('/generate', methods=['POST'])
 def generate_response():
     user_input = request.json.get('message')
-    inputs = transformer_tokenizer.encode(user_input, return_tensors='pt')
-    outputs = transformer_model.generate(inputs, max_length=50, num_return_sequences=1, temperature=0.7)
-    response = transformer_tokenizer.decode(outputs[0], skip_special_tokens=True)
+    # PubMedを利用して、関連する知識を取得
+    knowledge_data = fetch_pubmed(user_input)
+    save_to_db(knowledge_data, category="medical")
+    
+    # PubMedから得たデータを表示
+    return jsonify({'response': knowledge_data})
 
-    return jsonify({'response': response})
+@app.route('/get_knowledge', methods=['GET'])
+def get_knowledge():
+    category = request.args.get('category')
+    knowledge_data = get_knowledge_by_category(category)
+    return jsonify({'knowledge': knowledge_data})
 
 if __name__ == '__main__':
     app.run(port=5000, debug=True)
